@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lovits</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -13,8 +15,19 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
+    :root {
+      --black: #080808;
+      --card: #151515;
+      --card2: #101010;
+      --gold: #e0b82f;
+      --pink: #ff2b8d;
+      --text: #ffffff;
+      --muted: #9a9a9a;
+      --border: #262626;
+    }
+
     body {
-      background: #080808;
+      background: #000;
       color: white;
       min-height: 100vh;
       display: flex;
@@ -28,73 +41,241 @@
       padding: 28px 22px 100px;
       position: relative;
       background:
-        radial-gradient(circle at top, rgba(255, 43, 141, 0.12), transparent 32%),
-        #080808;
+        radial-gradient(circle at top, rgba(255,43,141,.12), transparent 30%),
+        var(--black);
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     .logo {
       text-align: center;
-      margin-top: 25px;
-      margin-bottom: 32px;
+      margin-top: 12px;
+      margin-bottom: 30px;
     }
 
     .wolf {
-      font-size: 72px;
+      font-size: 64px;
       line-height: 1;
-      filter: sepia(1) saturate(3);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     h1 {
-      font-size: 42px;
+      font-size: 40px;
       letter-spacing: 3px;
-      color: #d4af37;
+      color: var(--gold);
     }
 
     .tagline {
-      color: #ff2b8d;
-      font-size: 13px;
+      color: var(--pink);
+      font-size: 12px;
       letter-spacing: 2px;
       margin-top: 8px;
     }
 
-    .welcome {
-      margin-top: 35px;
-    }
-
-    .welcome h2 {
-      font-size: 28px;
+    h2 {
+      font-size: 27px;
       margin-bottom: 8px;
     }
 
-    .welcome p {
-      color: #aaa;
+    .subtitle {
+      color: var(--muted);
       line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: #bbb;
+      margin-bottom: 7px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: white;
+      border-radius: 13px;
+      padding: 15px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--pink);
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: 0;
+      padding: 15px;
+      border-radius: 13px;
+      background: var(--gold);
+      color: #090909;
+      font-weight: 800;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .secondary-btn {
+      width: 100%;
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: 13px;
+      background: transparent;
+      color: white;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .pink-link {
+      color: var(--pink);
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .switch-text {
+      text-align: center;
+      color: #999;
+      font-size: 13px;
+      margin-top: 22px;
+    }
+
+    .message {
+      margin-top: 14px;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.4;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.error {
+      background: rgba(255, 55, 80, .12);
+      border: 1px solid rgba(255, 55, 80, .35);
+      color: #ff8f9f;
+    }
+
+    .message.success {
+      background: rgba(224, 184, 47, .10);
+      border: 1px solid rgba(224, 184, 47, .4);
+      color: #f0d567;
+    }
+
+    .sport-choice {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 13px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+    }
+
+    .sport-choice.selected {
+      border-color: var(--pink);
+      background: rgba(255,43,141,.08);
+    }
+
+    .sport-choice span {
+      font-size: 30px;
+    }
+
+    .sport-choice strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .sport-choice small {
+      color: #888;
+    }
+
+    .level-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .level-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 17px;
+      cursor: pointer;
+    }
+
+    .level-card.selected {
+      border-color: var(--gold);
+      background: rgba(224,184,47,.08);
+    }
+
+    .level-card strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .level-card small {
+      color: var(--muted);
+    }
+
+    .home-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 28px;
     }
 
+    .mini-logo {
+      color: var(--gold);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .profile-dot {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--pink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
     .sport-card {
-      background: #151515;
-      border: 1px solid #262626;
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: 18px;
       padding: 20px;
       margin-bottom: 15px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .sport-card:hover {
-      transform: translateY(-2px);
-      border-color: #ff2b8d;
     }
 
     .sport-left {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 15px;
     }
 
     .sport-icon {
@@ -105,7 +286,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 25px;
+      font-size: 24px;
     }
 
     .sport-title {
@@ -120,20 +301,15 @@
     }
 
     .arrow {
-      color: #d4af37;
-      font-size: 24px;
-    }
-
-    .quick-actions {
-      margin-top: 30px;
+      color: var(--gold);
+      font-size: 25px;
     }
 
     .section-title {
-      font-size: 15px;
-      color: #d4af37;
-      margin-bottom: 14px;
-      text-transform: uppercase;
+      color: var(--gold);
+      font-size: 14px;
       letter-spacing: 1px;
+      margin: 28px 0 14px;
     }
 
     .action-grid {
@@ -143,79 +319,72 @@
     }
 
     .action {
-      background: #121212;
-      border: 1px solid #222;
+      background: var(--card2);
+      border: 1px solid var(--border);
       border-radius: 16px;
       padding: 18px;
       min-height: 112px;
     }
 
     .action span {
-      font-size: 24px;
       display: block;
+      font-size: 24px;
       margin-bottom: 12px;
     }
 
     .action strong {
       display: block;
-      font-size: 15px;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
     }
 
     .action small {
       color: #888;
-      font-size: 12px;
     }
 
     .lockin {
       margin-top: 28px;
-      border: 1px solid #d4af37;
+      border: 1px solid var(--gold);
       border-radius: 18px;
       padding: 22px;
-      background: linear-gradient(
-        135deg,
-        rgba(212, 175, 55, 0.13),
-        rgba(255, 43, 141, 0.06)
-      );
+      background:
+        linear-gradient(135deg, rgba(224,184,47,.12), rgba(255,43,141,.06));
     }
 
-    .lockin-top {
+    .lock-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 9px;
     }
 
-    .lockin strong {
-      color: #d4af37;
+    .lock-top strong {
+      color: var(--gold);
       font-size: 20px;
     }
 
     .pro {
-      font-size: 11px;
-      color: black;
-      background: #d4af37;
+      background: var(--gold);
+      color: #080808;
       padding: 5px 9px;
+      font-size: 11px;
       border-radius: 999px;
-      font-weight: bold;
+      font-weight: 900;
     }
 
     .lockin p {
       color: #aaa;
       font-size: 13px;
       line-height: 1.5;
-      margin-bottom: 15px;
+      margin-bottom: 14px;
     }
 
-    .lock-button {
+    .logout {
       width: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 14px;
-      background: #d4af37;
-      color: #090909;
-      font-weight: bold;
-      cursor: pointer;
+      margin-top: 25px;
+      background: transparent;
+      color: #777;
+      border: 0;
+      font-size: 12px;
     }
 
     .nav {
@@ -225,11 +394,11 @@
       transform: translateX(-50%);
       width: 100%;
       max-width: 430px;
-      background: rgba(10, 10, 10, 0.96);
+      background: rgba(8,8,8,.96);
       border-top: 1px solid #222;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      padding: 12px 8px 18px;
+      grid-template-columns: repeat(4,1fr);
+      padding: 11px 5px 18px;
     }
 
     .nav-item {
@@ -240,86 +409,282 @@
 
     .nav-item span {
       display: block;
-      font-size: 22px;
+      font-size: 21px;
       margin-bottom: 4px;
     }
 
     .nav-item.active {
-      color: #ff2b8d;
+      color: var(--pink);
     }
   </style>
 </head>
 
 <body>
-  <main class="app">
 
-    <section class="logo">
+<main class="app">
+
+  <!-- AUTH -->
+  <section id="authScreen">
+
+    <div class="logo">
       <div class="wolf">🐺</div>
       <h1>LOVITS</h1>
       <div class="tagline">PLAY · CONNECT · COMPETE</div>
-    </section>
+    </div>
 
-    <section class="welcome">
-      <h2>¿Qué quieres jugar?</h2>
-      <p>
-        Encuentra jugadores de tu nivel, arma partidos y conecta con tu manada.
+    <!-- REGISTER -->
+    <div id="registerForm">
+      <h2>Únete a la manada.</h2>
+      <p class="subtitle">
+        Crea tu perfil deportivo y encuentra gente de tu nivel.
       </p>
 
-      <div class="sport-card">
-        <div class="sport-left">
-          <div class="sport-icon">⚽</div>
-          <div>
-            <div class="sport-title">Fútbol</div>
-            <div class="sport-text">Busca jugadores o crea un partido</div>
+      <div class="form-group">
+        <label>Nombre</label>
+        <input id="registerName" placeholder="Diego Arias" />
+      </div>
+
+      <div class="form-group">
+        <label>Usuario</label>
+        <input id="registerUsername" placeholder="diego10" />
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input id="registerEmail" type="email" placeholder="tu@email.com" />
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input id="registerPassword" type="password" placeholder="Mínimo 6 caracteres" />
+      </div>
+
+      <button class="primary-btn" onclick="registerUser()">
+        CREAR CUENTA
+      </button>
+
+      <div id="registerMessage" class="message"></div>
+
+      <div class="switch-text">
+        ¿Ya tienes cuenta?
+        <span class="pink-link" onclick="showLogin()">Iniciar sesión</span>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginForm" class="hidden">
+      <h2>Bienvenido de vuelta.</h2>
+      <p class="subtitle">
+        Entra a LOVITS y vuelve al juego.
+      </p>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input id="loginEmail" type="email" placeholder="tu@email.com" />
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input id="loginPassword" type="password" placeholder="Tu contraseña" />
+      </div>
+
+      <button class="primary-btn" onclick="loginUser()">
+        ENTRAR
+      </button>
+
+      <div id="loginMessage" class="message"></div>
+
+      <div class="switch-text">
+        ¿No tienes cuenta?
+        <span class="pink-link" onclick="showRegister()">Crear cuenta</span>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ONBOARDING SPORT -->
+  <section id="sportScreen" class="hidden">
+
+    <div class="logo">
+      <div class="wolf">🐺</div>
+      <h1>LOVITS</h1>
+    </div>
+
+    <h2>¿Qué juegas?</h2>
+    <p class="subtitle">
+      Puedes elegir uno o los dos deportes.
+    </p>
+
+    <div
+      id="footballChoice"
+      class="sport-choice"
+      onclick="toggleSport('football')"
+    >
+      <span>⚽</span>
+      <div>
+        <strong>Fútbol</strong>
+        <small>Partidos, jugadores y competencias.</small>
+      </div>
+    </div>
+
+    <div
+      id="padelChoice"
+      class="sport-choice"
+      onclick="toggleSport('padel')"
+    >
+      <span>🎾</span>
+      <div>
+        <strong>Pádel</strong>
+        <small>Encuentra jugadores y rivales.</small>
+      </div>
+    </div>
+
+    <button class="primary-btn" onclick="continueToLevel()">
+      CONTINUAR
+    </button>
+
+    <div id="sportMessage" class="message"></div>
+
+  </section>
+
+
+  <!-- LEVEL -->
+  <section id="levelScreen" class="hidden">
+
+    <div class="logo">
+      <div class="wolf">🐺</div>
+      <h1>LOVITS</h1>
+    </div>
+
+    <h2>¿Cuál es tu nivel?</h2>
+    <p class="subtitle">
+      No te preocupes: este es solo tu nivel inicial.
+      LOVITS podrá ajustarlo con tu actividad.
+    </p>
+
+    <div class="level-grid">
+
+      <div
+        id="levelBeginner"
+        class="level-card"
+        onclick="chooseLevel(3.0, 'levelBeginner')"
+      >
+        <strong>Principiante</strong>
+        <small>Estoy empezando o juego ocasionalmente.</small>
+      </div>
+
+      <div
+        id="levelIntermediate"
+        class="level-card"
+        onclick="chooseLevel(5.5, 'levelIntermediate')"
+      >
+        <strong>Intermedio</strong>
+        <small>Juego regularmente y tengo experiencia.</small>
+      </div>
+
+      <div
+        id="levelAdvanced"
+        class="level-card"
+        onclick="chooseLevel(8.0, 'levelAdvanced')"
+      >
+        <strong>Avanzado</strong>
+        <small>Juego frecuentemente y busco rivales exigentes.</small>
+      </div>
+
+    </div>
+
+    <button class="primary-btn" onclick="finishOnboarding()">
+      CREAR MI PERFIL
+    </button>
+
+    <div id="levelMessage" class="message"></div>
+
+  </section>
+
+
+  <!-- HOME -->
+  <section id="homeScreen" class="hidden">
+
+    <div class="home-header">
+      <div>
+        <div class="mini-logo">🐺 LOVITS</div>
+        <small style="color:#777;">Play · Connect · Compete</small>
+      </div>
+
+      <div id="profileInitial" class="profile-dot">L</div>
+    </div>
+
+    <h2 id="helloText">¿Qué quieres jugar?</h2>
+
+    <p class="subtitle">
+      Encuentra jugadores de tu nivel, arma partidos y conecta con tu manada.
+    </p>
+
+    <div id="footballHome" class="sport-card hidden">
+      <div class="sport-left">
+        <div class="sport-icon">⚽</div>
+
+        <div>
+          <div class="sport-title">Fútbol</div>
+          <div id="footballLevelText" class="sport-text">
+            Nivel 5.0
           </div>
         </div>
-        <div class="arrow">›</div>
       </div>
 
-      <div class="sport-card">
-        <div class="sport-left">
-          <div class="sport-icon">🎾</div>
-          <div>
-            <div class="sport-title">Pádel</div>
-            <div class="sport-text">Encuentra rivales de tu nivel</div>
+      <div class="arrow">›</div>
+    </div>
+
+    <div id="padelHome" class="sport-card hidden">
+      <div class="sport-left">
+        <div class="sport-icon">🎾</div>
+
+        <div>
+          <div class="sport-title">Pádel</div>
+          <div id="padelLevelText" class="sport-text">
+            Nivel 5.0
           </div>
         </div>
-        <div class="arrow">›</div>
       </div>
-    </section>
 
-    <section class="quick-actions">
-      <div class="section-title">Tu comunidad</div>
+      <div class="arrow">›</div>
+    </div>
 
-      <div class="action-grid">
-        <div class="action">
-          <span>🤝</span>
-          <strong>Amigos</strong>
-          <small>Agrega jugadores</small>
-        </div>
+    <div class="section-title">
+      TU COMUNIDAD
+    </div>
 
-        <div class="action">
-          <span>🐺</span>
-          <strong>Manadas</strong>
-          <small>Juega con tu grupo</small>
-        </div>
+    <div class="action-grid">
 
-        <div class="action">
-          <span>💬</span>
-          <strong>Chats</strong>
-          <small>Habla con jugadores</small>
-        </div>
-
-        <div class="action">
-          <span>🏆</span>
-          <strong>Competencias</strong>
-          <small>Compite con amigos</small>
-        </div>
+      <div class="action">
+        <span>🤝</span>
+        <strong>Amigos</strong>
+        <small>Agrega jugadores</small>
       </div>
-    </section>
 
-    <section class="lockin">
-      <div class="lockin-top">
+      <div class="action">
+        <span>🐺</span>
+        <strong>Manadas</strong>
+        <small>Juega con tu grupo</small>
+      </div>
+
+      <div class="action">
+        <span>💬</span>
+        <strong>Chats</strong>
+        <small>Habla con jugadores</small>
+      </div>
+
+      <div class="action">
+        <span>🏆</span>
+        <strong>Competencias</strong>
+        <small>Compite con amigos</small>
+      </div>
+
+    </div>
+
+    <div class="lockin">
+      <div class="lock-top">
         <strong>🔒 LOCK IN</strong>
         <span class="pro">PRO</span>
       </div>
@@ -328,31 +693,628 @@
         Ranked, rangos, estadísticas, temporadas y tu perfil competitivo.
       </p>
 
-      <button class="lock-button">PRÓXIMAMENTE</button>
-    </section>
-
-  </main>
-
-  <nav class="nav">
-    <div class="nav-item active">
-      <span>⌂</span>
-      Inicio
+      <button class="primary-btn">
+        PRÓXIMAMENTE
+      </button>
     </div>
 
-    <div class="nav-item">
-      <span>⚽</span>
-      Jugar
-    </div>
+    <button class="logout" onclick="logoutUser()">
+      Cerrar sesión
+    </button>
 
-    <div class="nav-item">
-      <span>💬</span>
-      Chats
-    </div>
+  </section>
 
-    <div class="nav-item">
-      <span>👤</span>
-      Perfil
-    </div>
-  </nav>
+</main>
+
+
+<nav id="bottomNav" class="nav hidden">
+
+  <div class="nav-item active">
+    <span>⌂</span>
+    Inicio
+  </div>
+
+  <div class="nav-item">
+    <span>⚽</span>
+    Jugar
+  </div>
+
+  <div class="nav-item">
+    <span>💬</span>
+    Chats
+  </div>
+
+  <div class="nav-item">
+    <span>👤</span>
+    Perfil
+  </div>
+
+</nav>
+
+
+<script>
+
+  const SUPABASE_URL =
+    "https://rbnhpzhdegmfxcpidxfx.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_FWkfZ0we19Yme1kLYAPf7A_whStRkfP";
+
+
+  const client = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+  let selectedSports = [];
+  let selectedLevel = null;
+
+  let pendingProfile = {
+    name: "",
+    username: ""
+  };
+
+
+  function hideAllScreens() {
+
+    document.getElementById("authScreen").classList.add("hidden");
+    document.getElementById("sportScreen").classList.add("hidden");
+    document.getElementById("levelScreen").classList.add("hidden");
+    document.getElementById("homeScreen").classList.add("hidden");
+    document.getElementById("bottomNav").classList.add("hidden");
+
+  }
+
+
+  function showMessage(id, text, type) {
+
+    const element = document.getElementById(id);
+
+    element.textContent = text;
+    element.className = "message show " + type;
+
+  }
+
+
+  function clearMessage(id) {
+
+    const element = document.getElementById(id);
+
+    element.textContent = "";
+    element.className = "message";
+
+  }
+
+
+  function showLogin() {
+
+    document.getElementById("registerForm").classList.add("hidden");
+    document.getElementById("loginForm").classList.remove("hidden");
+
+  }
+
+
+  function showRegister() {
+
+    document.getElementById("loginForm").classList.add("hidden");
+    document.getElementById("registerForm").classList.remove("hidden");
+
+  }
+
+
+  async function registerUser() {
+
+    clearMessage("registerMessage");
+
+    const name =
+      document.getElementById("registerName").value.trim();
+
+    const username =
+      document.getElementById("registerUsername")
+        .value
+        .trim()
+        .toLowerCase();
+
+    const email =
+      document.getElementById("registerEmail").value.trim();
+
+    const password =
+      document.getElementById("registerPassword").value;
+
+
+    if (!name || !username || !email || !password) {
+
+      showMessage(
+        "registerMessage",
+        "Completa todos los campos.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    if (username.length < 3) {
+
+      showMessage(
+        "registerMessage",
+        "El usuario debe tener al menos 3 caracteres.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    if (password.length < 6) {
+
+      showMessage(
+        "registerMessage",
+        "La contraseña debe tener al menos 6 caracteres.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    pendingProfile = {
+      name,
+      username
+    };
+
+
+    localStorage.setItem(
+      "lovits_pending_profile",
+      JSON.stringify(pendingProfile)
+    );
+
+
+    const { data, error } =
+      await client.auth.signUp({
+
+        email,
+        password,
+
+        options: {
+
+          data: {
+            display_name: name,
+            username: username
+          }
+
+        }
+
+      });
+
+
+    if (error) {
+
+      showMessage(
+        "registerMessage",
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    if (!data.session) {
+
+      showMessage(
+        "registerMessage",
+        "Cuenta creada. Revisa tu email para confirmar tu cuenta y luego inicia sesión.",
+        "success"
+      );
+
+      return;
+    }
+
+
+    hideAllScreens();
+
+    document
+      .getElementById("sportScreen")
+      .classList.remove("hidden");
+
+  }
+
+
+  async function loginUser() {
+
+    clearMessage("loginMessage");
+
+    const email =
+      document.getElementById("loginEmail").value.trim();
+
+    const password =
+      document.getElementById("loginPassword").value;
+
+
+    const { data, error } =
+      await client.auth.signInWithPassword({
+        email,
+        password
+      });
+
+
+    if (error) {
+
+      showMessage(
+        "loginMessage",
+        "Email o contraseña incorrectos.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    await routeAuthenticatedUser(data.user);
+
+  }
+
+
+  async function routeAuthenticatedUser(user) {
+
+    const { data: profile } =
+      await client
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+
+    if (!profile) {
+
+      const pending =
+        JSON.parse(
+          localStorage.getItem(
+            "lovits_pending_profile"
+          ) || "null"
+        );
+
+
+      if (pending) {
+
+        pendingProfile = pending;
+
+      } else {
+
+        pendingProfile = {
+
+          name:
+            user.user_metadata?.display_name ||
+            "Jugador",
+
+          username:
+            user.user_metadata?.username ||
+            ("player" + Date.now().toString().slice(-5))
+
+        };
+
+      }
+
+
+      hideAllScreens();
+
+      document
+        .getElementById("sportScreen")
+        .classList.remove("hidden");
+
+      return;
+    }
+
+
+    await loadHome(profile, user);
+
+  }
+
+
+  function toggleSport(sport) {
+
+    const element =
+      sport === "football"
+        ? document.getElementById("footballChoice")
+        : document.getElementById("padelChoice");
+
+
+    if (selectedSports.includes(sport)) {
+
+      selectedSports =
+        selectedSports.filter(item => item !== sport);
+
+      element.classList.remove("selected");
+
+    } else {
+
+      selectedSports.push(sport);
+
+      element.classList.add("selected");
+
+    }
+
+  }
+
+
+  function continueToLevel() {
+
+    clearMessage("sportMessage");
+
+
+    if (selectedSports.length === 0) {
+
+      showMessage(
+        "sportMessage",
+        "Selecciona al menos un deporte.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    hideAllScreens();
+
+    document
+      .getElementById("levelScreen")
+      .classList.remove("hidden");
+
+  }
+
+
+  function chooseLevel(level, elementId) {
+
+    selectedLevel = level;
+
+
+    document
+      .querySelectorAll(".level-card")
+      .forEach(card =>
+        card.classList.remove("selected")
+      );
+
+
+    document
+      .getElementById(elementId)
+      .classList.add("selected");
+
+  }
+
+
+  async function finishOnboarding() {
+
+    clearMessage("levelMessage");
+
+
+    if (!selectedLevel) {
+
+      showMessage(
+        "levelMessage",
+        "Selecciona tu nivel inicial.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    const {
+      data: { user }
+    } = await client.auth.getUser();
+
+
+    if (!user) {
+
+      showMessage(
+        "levelMessage",
+        "Tu sesión expiró. Vuelve a iniciar sesión.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    const { error: profileError } =
+      await client
+        .from("profiles")
+        .insert({
+
+          id: user.id,
+
+          username:
+            pendingProfile.username,
+
+          display_name:
+            pendingProfile.name
+
+        });
+
+
+    if (profileError) {
+
+      showMessage(
+        "levelMessage",
+        profileError.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    const sportRows =
+      selectedSports.map(sport => ({
+        user_id: user.id,
+        sport: sport,
+        level: selectedLevel
+      }));
+
+
+    const { error: sportError } =
+      await client
+        .from("player_sports")
+        .insert(sportRows);
+
+
+    if (sportError) {
+
+      showMessage(
+        "levelMessage",
+        sportError.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    localStorage.removeItem(
+      "lovits_pending_profile"
+    );
+
+
+    const { data: profile } =
+      await client
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+
+    await loadHome(profile, user);
+
+  }
+
+
+  async function loadHome(profile, user) {
+
+    hideAllScreens();
+
+
+    document
+      .getElementById("homeScreen")
+      .classList.remove("hidden");
+
+
+    document
+      .getElementById("bottomNav")
+      .classList.remove("hidden");
+
+
+    const firstName =
+      profile.display_name.split(" ")[0];
+
+
+    document.getElementById(
+      "helloText"
+    ).textContent =
+      "Hola, " + firstName + " 👋";
+
+
+    document.getElementById(
+      "profileInitial"
+    ).textContent =
+      firstName.charAt(0).toUpperCase();
+
+
+    const { data: sports } =
+      await client
+        .from("player_sports")
+        .select("*")
+        .eq("user_id", user.id);
+
+
+    if (sports) {
+
+      sports.forEach(item => {
+
+        if (item.sport === "football") {
+
+          document
+            .getElementById("footballHome")
+            .classList.remove("hidden");
+
+          document.getElementById(
+            "footballLevelText"
+          ).textContent =
+            "Nivel " + Number(item.level).toFixed(1);
+
+        }
+
+
+        if (item.sport === "padel") {
+
+          document
+            .getElementById("padelHome")
+            .classList.remove("hidden");
+
+          document.getElementById(
+            "padelLevelText"
+          ).textContent =
+            "Nivel " + Number(item.level).toFixed(1);
+
+        }
+
+      });
+
+    }
+
+  }
+
+
+  async function logoutUser() {
+
+    await client.auth.signOut();
+
+    selectedSports = [];
+    selectedLevel = null;
+
+
+    hideAllScreens();
+
+    document
+      .getElementById("authScreen")
+      .classList.remove("hidden");
+
+    showLogin();
+
+  }
+
+
+  async function startApp() {
+
+    const {
+      data: { session }
+    } =
+      await client.auth.getSession();
+
+
+    if (session?.user) {
+
+      await routeAuthenticatedUser(
+        session.user
+      );
+
+    } else {
+
+      hideAllScreens();
+
+      document
+        .getElementById("authScreen")
+        .classList.remove("hidden");
+
+    }
+
+  }
+
+
+  startApp();
+
+</script>
+
 </body>
 </html>
