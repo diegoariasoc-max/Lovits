@@ -724,9 +724,9 @@
     Encuentra jugadores, arma un partido o revisa tus próximos encuentros.
   </p>
 
-  <div class="sport-card" onclick="alert('Próximo paso: encontrar jugadores')">
+ <div class="sport-card" onclick="openFindPlayers()">
     <div class="sport-left">
-      <div class="sport-icon">🔎</div>
+dame       <div class="sport-icon">🔎</div>
       <div>
         <div class="sport-title">Encontrar jugadores</div>
         <div class="sport-text">Busca personas cerca de tu nivel</div>
@@ -755,6 +755,32 @@
       </div>
     </div>
     <div class="arrow">›</div>
+  </div>
+
+</section>
+  <!-- FIND PLAYERS -->
+<section id="findPlayersScreen" class="hidden">
+
+  <div class="home-header">
+    <div>
+      <div class="mini-logo">🐺 LOVITS</div>
+      <small style="color:#777;">Encontrar jugadores</small>
+    </div>
+
+    <button onclick="openFootball()"
+      style="background:transparent; border:0; color:#e0b82f; font-size:16px;">
+      ← Volver
+    </button>
+  </div>
+
+  <h2>🔎 Encuentra jugadores</h2>
+
+  <p class="subtitle">
+    Te mostraremos personas cercanas a tu nivel de fútbol.
+  </p>
+
+  <div id="playerResults">
+    <p style="color:#777;">Buscando jugadores...</p>
   </div>
 
 </section>
@@ -819,6 +845,8 @@
     document.getElementById("homeScreen").classList.add("hidden");
     document.getElementById("bottomNav").classList.add("hidden");
     document.getElementById("footballScreen").classList.add("hidden");
+    document.getElementById("findPlayersScreen").classList.add("hidden");
+
 
   }
 
@@ -1320,6 +1348,114 @@
     }
 
   }
+  async function openFindPlayers() {
+
+  hideAllScreens();
+
+  document
+    .getElementById("findPlayersScreen")
+    .classList.remove("hidden");
+
+  const {
+    data: { user }
+  } = await client.auth.getUser();
+
+  if (!user) return;
+
+  const { data: mySport } =
+    await client
+      .from("player_sports")
+      .select("level")
+      .eq("user_id", user.id)
+      .eq("sport", "football")
+      .maybeSingle();
+
+  if (!mySport) {
+    document.getElementById("playerResults").innerHTML =
+      "<p style='color:#999;'>No encontramos tu nivel de fútbol.</p>";
+    return;
+  }
+
+  const minLevel = Number(mySport.level) - 1;
+  const maxLevel = Number(mySport.level) + 1;
+
+  const { data: players, error } =
+    await client
+      .from("player_sports")
+      .select(`
+        user_id,
+        level,
+        football_position,
+        profiles (
+          display_name,
+          username,
+          commune
+        )
+      `)
+      .eq("sport", "football")
+      .gte("level", minLevel)
+      .lte("level", maxLevel)
+      .neq("user_id", user.id)
+      .limit(20);
+
+  if (error) {
+    document.getElementById("playerResults").innerHTML =
+      "<p style='color:#ff8f9f;'>No pudimos cargar jugadores.</p>";
+    return;
+  }
+
+  if (!players || players.length === 0) {
+    document.getElementById("playerResults").innerHTML =
+      `
+      <div class="sport-card">
+        <div>
+          <div class="sport-title">Aún no hay jugadores compatibles</div>
+          <div class="sport-text">
+            Cuando se registren más personas de tu nivel, aparecerán aquí.
+          </div>
+        </div>
+      </div>
+      `;
+    return;
+  }
+
+  document.getElementById("playerResults").innerHTML =
+    players.map(player => {
+
+      const profile = player.profiles;
+
+      return `
+        <div class="sport-card">
+          <div>
+            <div class="sport-title">
+              ${profile?.display_name || "Jugador"}
+            </div>
+
+            <div class="sport-text">
+              ⚽ Nivel ${Number(player.level).toFixed(1)}
+            </div>
+
+            <div class="sport-text">
+              📍 ${profile?.commune || "Comuna no indicada"}
+            </div>
+
+            <div class="sport-text">
+              Posición: ${player.football_position || "No indicada"}
+            </div>
+          </div>
+
+          <button
+            class="primary-btn"
+            style="width:auto; padding:10px 12px; margin:0;"
+          >
+            AGREGAR
+          </button>
+        </div>
+      `;
+
+    }).join("");
+
+}
 
 function openFootball() {
   hideAllScreens();
