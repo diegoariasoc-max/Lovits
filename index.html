@@ -453,17 +453,6 @@
   <label>Comuna</label>
   <input id="registerCommune" placeholder="Ej: Las Condes" />
 </div>
-      <div class="form-group">
-  <label>Posición en fútbol</label>
-
-  <select id="registerFootballPosition">
-    <option value="">Selecciona una posición</option>
-    <option value="Arquero">Arquero</option>
-    <option value="Defensa">Defensa</option>
-    <option value="Mediocampista">Mediocampista</option>
-    <option value="Delantero">Delantero</option>
-  </select>
-</div>
 
       <div class="form-group">
         <label>Email</label>
@@ -563,7 +552,58 @@
     <div id="sportMessage" class="message"></div>
 
   </section>
+<!-- SPORT DETAILS -->
+<section id="sportDetailsScreen" class="hidden">
 
+  <div class="logo">
+    <div class="wolf">🐺</div>
+    <h1>LOVITS</h1>
+  </div>
+
+  <h2>Cuéntanos cómo juegas</h2>
+
+  <p class="subtitle">
+    Solo te preguntaremos lo necesario según los deportes que elegiste.
+  </p>
+
+  <div id="footballDetails" class="hidden">
+
+    <div class="form-group">
+      <label>Posición en fútbol</label>
+
+      <select id="footballPosition">
+        <option value="">Selecciona una posición</option>
+        <option value="Arquero">Arquero</option>
+        <option value="Defensa">Defensa</option>
+        <option value="Mediocampista">Mediocampista</option>
+        <option value="Delantero">Delantero</option>
+      </select>
+    </div>
+
+  </div>
+
+  <div id="padelDetails" class="hidden">
+
+    <div class="form-group">
+      <label>Lado preferido en pádel</label>
+
+      <select id="padelSide">
+        <option value="">Selecciona una opción</option>
+        <option value="right">Derecha</option>
+        <option value="left">Revés</option>
+        <option value="both">Ambos</option>
+      </select>
+    </div>
+
+  </div>
+
+  <button class="primary-btn" onclick="continueToLevelFromDetails()">
+    CONTINUAR
+  </button>
+
+  <div id="sportDetailsMessage" class="message"></div>
+
+</section>
 
   <!-- LEVEL -->
   <section id="levelScreen" class="hidden">
@@ -862,6 +902,7 @@
     document.getElementById("bottomNav").classList.add("hidden");
     document.getElementById("footballScreen").classList.add("hidden");
     document.getElementById("findPlayersScreen").classList.add("hidden");
+    document.getElementById("sportDetailsScreen").classList.add("hidden");
 
 
   }
@@ -920,9 +961,7 @@
     .value
     .trim();
   
-    const footballPosition =
-  document.getElementById("registerFootballPosition")
-    .value;
+    
 
     const email =
       document.getElementById("registerEmail").value.trim();
@@ -969,8 +1008,7 @@
 pendingProfile = {
   name,
   username,
-  commune,
-  footballPosition
+  commune
 };
 
     localStorage.setItem(
@@ -1147,32 +1185,81 @@ pendingProfile = {
   }
 
 
-  function continueToLevel() {
+function continueToLevel() {
 
-    clearMessage("sportMessage");
+  clearMessage("sportMessage");
 
+  if (selectedSports.length === 0) {
 
-    if (selectedSports.length === 0) {
+    showMessage(
+      "sportMessage",
+      "Selecciona al menos un deporte.",
+      "error"
+    );
 
-      showMessage(
-        "sportMessage",
-        "Selecciona al menos un deporte.",
-        "error"
-      );
-
-      return;
-    }
-
-
-    hideAllScreens();
-
-    document
-      .getElementById("levelScreen")
-      .classList.remove("hidden");
-
+    return;
   }
 
+  hideAllScreens();
 
+  document
+    .getElementById("sportDetailsScreen")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("footballDetails")
+    .classList.toggle(
+      "hidden",
+      !selectedSports.includes("football")
+    );
+
+  document
+    .getElementById("padelDetails")
+    .classList.toggle(
+      "hidden",
+      !selectedSports.includes("padel")
+    );
+
+}
+
+function continueToLevelFromDetails() {
+
+  clearMessage("sportDetailsMessage");
+
+  if (selectedSports.includes("football")) {
+    const position =
+      document.getElementById("footballPosition").value;
+
+    if (!position) {
+      showMessage(
+        "sportDetailsMessage",
+        "Selecciona tu posición en fútbol.",
+        "error"
+      );
+      return;
+    }
+  }
+
+  if (selectedSports.includes("padel")) {
+    const side =
+      document.getElementById("padelSide").value;
+
+    if (!side) {
+      showMessage(
+        "sportDetailsMessage",
+        "Selecciona tu lado preferido en pádel.",
+        "error"
+      );
+      return;
+    }
+  }
+
+  hideAllScreens();
+
+  document
+    .getElementById("levelScreen")
+    .classList.remove("hidden");
+}
   function chooseLevel(level, elementId) {
 
     selectedLevel = level;
@@ -1262,7 +1349,11 @@ const sportRows =
     level: selectedLevel,
     football_position:
       sport === "football"
-        ? pendingProfile.footballPosition
+        ? document.getElementById("footballPosition")?.value || null
+        : null,
+    padel_side:
+      sport === "padel"
+        ? document.getElementById("padelSide")?.value || null
         : null
   }));
 
