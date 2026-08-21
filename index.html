@@ -621,7 +621,7 @@
       Encuentra jugadores de tu nivel, arma partidos y conecta con tu manada.
     </p>
 
-    <div id="footballHome" class="sport-card hidden">
+    <div id="footballHome" class="sport-card hidden" onclick="openFootball()">
       <div class="sport-left">
         <div class="sport-icon">⚽</div>
 
@@ -703,6 +703,61 @@
     </button>
 
   </section>
+  <!-- FOOTBALL -->
+<section id="footballScreen" class="hidden">
+
+  <div class="home-header">
+    <div>
+      <div class="mini-logo">🐺 LOVITS</div>
+      <small style="color:#777;">Fútbol</small>
+    </div>
+
+    <button onclick="backHome()"
+      style="background:transparent; border:0; color:#e0b82f; font-size:16px;">
+      ← Volver
+    </button>
+  </div>
+
+  <h2>⚽ Jugar Fútbol</h2>
+
+  <p class="subtitle">
+    Encuentra jugadores, arma un partido o revisa tus próximos encuentros.
+  </p>
+
+  <div class="sport-card" onclick="alert('Próximo paso: encontrar jugadores')">
+    <div class="sport-left">
+      <div class="sport-icon">🔎</div>
+      <div>
+        <div class="sport-title">Encontrar jugadores</div>
+        <div class="sport-text">Busca personas cerca de tu nivel</div>
+      </div>
+    </div>
+    <div class="arrow">›</div>
+  </div>
+
+  <div class="sport-card">
+    <div class="sport-left">
+      <div class="sport-icon">➕</div>
+      <div>
+        <div class="sport-title">Crear partido</div>
+        <div class="sport-text">Busca jugadores para completar tu partido</div>
+      </div>
+    </div>
+    <div class="arrow">›</div>
+  </div>
+
+  <div class="sport-card">
+    <div class="sport-left">
+      <div class="sport-icon">📅</div>
+      <div>
+        <div class="sport-title">Mis partidos</div>
+        <div class="sport-text">Próximos partidos y resultados</div>
+      </div>
+    </div>
+    <div class="arrow">›</div>
+  </div>
+
+</section>
 
 </main>
 
@@ -763,6 +818,7 @@
     document.getElementById("levelScreen").classList.add("hidden");
     document.getElementById("homeScreen").classList.add("hidden");
     document.getElementById("bottomNav").classList.add("hidden");
+    document.getElementById("footballScreen").classList.add("hidden");
 
   }
 
@@ -1265,7 +1321,30 @@
 
   }
 
+function openFootball() {
+  hideAllScreens();
 
+  document
+    .getElementById("footballScreen")
+    .classList.remove("hidden");
+}
+
+async function backHome() {
+  const {
+    data: { user }
+  } = await client.auth.getUser();
+
+  if (!user) return;
+
+  const { data: profile } =
+    await client
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+  await loadHome(profile, user);
+}
   async function logoutUser() {
 
     await client.auth.signOut();
