@@ -448,6 +448,10 @@
         <label>Usuario</label>
         <input id="registerUsername" placeholder="diego10" />
       </div>
+      <div class="form-group">
+  <label>Comuna</label>
+  <input id="registerCommune" placeholder="Ej: Las Condes" />
+</div>
 
       <div class="form-group">
         <label>Email</label>
@@ -899,6 +903,23 @@
         .value
         .trim()
         .toLowerCase();
+    const commune =
+  document.getElementById("registerCommune")
+    .value
+    .trim();
+    <div class="form-group">
+  <label>Posición en fútbol</label>
+  <select id="registerFootballPosition">
+    <option value="">Selecciona una posición</option>
+    <option value="Arquero">Arquero</option>
+    <option value="Defensa">Defensa</option>
+    <option value="Mediocampista">Mediocampista</option>
+    <option value="Delantero">Delantero</option>
+  </select>
+</div>
+    const footballPosition =
+  document.getElementById("registerFootballPosition")
+    .value;
 
     const email =
       document.getElementById("registerEmail").value.trim();
@@ -907,7 +928,7 @@
       document.getElementById("registerPassword").value;
 
 
-    if (!name || !username || !email || !password) {
+   if (!name || !username || !commune || !email || !password) {
 
       showMessage(
         "registerMessage",
@@ -942,12 +963,12 @@
       return;
     }
 
-
-    pendingProfile = {
-      name,
-      username
-    };
-
+pendingProfile = {
+  name,
+  username,
+  commune,
+  footballPosition
+};
 
     localStorage.setItem(
       "lovits_pending_profile",
@@ -1214,6 +1235,8 @@
 
           display_name:
             pendingProfile.name
+          commune:
+            pendingProfile.commune
 
         });
 
@@ -1229,13 +1252,16 @@
       return;
     }
 
-
-    const sportRows =
-      selectedSports.map(sport => ({
-        user_id: user.id,
-        sport: sport,
-        level: selectedLevel
-      }));
+const sportRows =
+  selectedSports.map(sport => ({
+    user_id: user.id,
+    sport: sport,
+    level: selectedLevel,
+    football_position:
+      sport === "football"
+        ? pendingProfile.footballPosition
+        : null
+  }));
 
 
     const { error: sportError } =
